@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Secret Love - Simple HTML</title>
+  <style>
+    :root{--bg:#fff7fb;--accent:#e11d48;--muted:#6b7280}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;background:linear-gradient(135deg,var(--bg),#fff);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+    .card{width:100%;max-width:900px;background:rgba(255,255,255,0.95);border-radius:16px;box-shadow:0 8px 30px rgba(16,24,40,0.08);display:grid;grid-template-columns:1fr 1fr;gap:20px;padding:28px}
+    h1{margin:0;font-size:20px}
+    p{margin:0;color:var(--muted)}
+    .left{display:flex;flex-direction:column;gap:12px}
+    input{padding:10px 12px;border:1px solid #e6e6e9;border-radius:10px;font-size:15px}
+    button{padding:8px 12px;border-radius:10px;border:0;background:var(--accent);color:#fff;font-weight:600;cursor:pointer}
+    .muted{color:var(--muted);font-size:13px}
+    .right{position:relative;padding:14px;border-radius:12px;background:linear-gradient(180deg,#fff,#fff7fb);display:flex;flex-direction:column;align-items:center;justify-content:center}
+    .status{font-weight:700;margin-top:8px}
+    .reveal-box{width:100%;max-width:320px;border:1px dashed #eee;padding:16px;border-radius:10px;text-align:center;background:#fff}
+    .hearts{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+    .heart{position:absolute;width:18px;height:18px;transform:translateY(0);opacity:0}
+    .copy-btn, .print-btn{padding:8px 10px;border-radius:8px;border:1px solid #eee;background:#fff;cursor:pointer}
+    .footer{grid-column:1/3;text-align:center;font-size:12px;color:var(--muted);margin-top:6px}
+    @media(max-width:780px){.card{grid-template-columns:1fr;max-width:420px}}
+
+    /* simple heart shape */
+    .heart svg{width:100%;height:100%}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="left">
+      <div>
+        <h1>Project: Secret Love (Simple)</h1>
+        <p class="muted">ini itu web khusus buat kamu okehh.</p>
+      </div>
+
+      <label class="muted" style="margin-top:8px">Nama (nama panggilan)</label>
+      <div style="display:flex;gap:8px">
+        <input id="nameInput" placeholder="Masukkan nama kamu sayang..." />
+        <button id="revealBtn">Reveal</button>
+      </div>
+      <div id="hint" class="muted" style="height:18px"></div>
+
+      <div style="margin-top:auto;display:flex;gap:8px">
+        <button id="resetBtn" style="background:#fff;color:var(--muted);border:1px solid #eee">Reset</button>
+        <button id="demoBtn" style="margin-left:auto;background:#f9f5f7;color:var(--muted);border:1px solid #fdecec">Demo</button>
+      </div>
+    </div>
+
+    <div class="right">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div style="width:44px;height:44px;border-radius:8px;background:#ffe4ec;display:flex;align-items:center;justify-content:center">🔒</div>
+        <div style="text-align:left">
+          <div class="muted" style="font-size:12px">Encrypted Love Capsule</div>
+          <div id="statusText" class="status">Terkunci</div>
+        </div>
+      </div>
+
+      <div style="margin-top:16px" class="reveal-box">
+        <div class="muted">Untuk</div>
+        <div id="toName" style="font-weight:800;font-size:20px;margin-top:6px;color:var(--accent)">sayangku ysng psling imup dan gemesin</div>
+        <div id="msg" style="margin-top:8px;color:var(--muted);font-size:14px;max-width:220px;margin-left:auto;margin-right:auto">Tekan Reveal untuk melihat pesan manisnya.</div>
+
+        <div style="margin-top:12px;display:flex;gap:8px;justify-content:center">
+          <button class="copy-btn" id="copyBtn">Copy Pesan</button>
+          <button class="print-btn" id="printBtn">Cetak</button>
+        </div>
+      </div>
+
+      <div style="margin-top:10px;font-family:monospace;font-size:12px;color:#9ca3af">0x<span id="hex">0000</span> • encrypted</div>
+
+      <div class="hearts" id="hearts"></div>
+    </div>
+
+    <div class="footer">Made with ❤️ — laksana ni bossss </div>
+  </div>
+
+  <script>
+    const nameInput = document.getElementById('nameInput');
+    const revealBtn = document.getElementById('revealBtn');
+    const statusText = document.getElementById('statusText');
+    const toName = document.getElementById('toName');
+    const msg = document.getElementById('msg');
+    const hex = document.getElementById('hex');
+    const hint = document.getElementById('hint');
+    const heartsWrap = document.getElementById('hearts');
+
+    function makeHexForName(n){
+      try{
+        const v = n.length * 31337;
+        return v.toString(16).slice(0,8).padStart(4,'0');
+      }catch(e){return '0000'}
+    }
+
+    function spawnHearts(){
+      heartsWrap.innerHTML = '';
+      for(let i=0;i<20;i++){
+        const el = document.createElement('div');
+        el.className = 'heart';
+        el.style.left = Math.random()*100 + '%';
+        el.style.top = (60 + Math.random()*20) + '%';
+        const scale = 0.6 + Math.random()*1.4;
+        el.style.transform = 'scale('+scale+')';
+        el.innerHTML = '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="'+getComputedStyle(document.documentElement).getPropertyValue('--accent')+'" d="M12 21s-7-4.9-9-7.2C1.4 11.8 3 8 6 6.3 8 5 10.4 5 12 6.4 13.6 5 16 5 18 6.3c3 1.7 4.6 5.5 3 7.5C19 16.1 12 21 12 21z"/></svg>';
+        heartsWrap.appendChild(el);
+        // animate
+        setTimeout(()=>{
+          el.style.transition = 'transform 1400ms cubic-bezier(.17,.67,.34,1), opacity 1400ms';
+          el.style.opacity = '1';
+          el.style.transform = 'translateY(-140px) scale('+scale+')';
+        }, 60*i);
+        setTimeout(()=>{ el.style.opacity = '0'; }, 1400 + 80*i);
+      }
+    }
+
+    revealBtn.addEventListener('click', ()=>{
+      const name = nameInput.value.trim();
+      if(!name){ hint.textContent = 'Isi dulu namamu sayang supaya pesannya nyampe ke kamu.'; return }
+      hint.textContent = '';
+      statusText.textContent = 'Terbuka';
+      toName.textContent = name;
+      msg.textContent = `Aku sayang kamu, ${name} ❤️\nkamu itu kayak kopi di pagi hari, karena selalu membuatku tersenyum dan bersemangat.`;
+      hex.textContent = makeHexForName(name);
+      spawnHearts();
+    });
+
+    document.getElementById('copyBtn').addEventListener('click', ()=>{
+      const text = msg.textContent;
+      navigator.clipboard && navigator.clipboard.writeText(text).then(()=>{
+        alert('Pesan disalin ke clipboard!');
+      }).catch(()=>{ alert('Gagal menyalin — izin clipboard ditolak.'); });
+    });
+
+    document.getElementById('printBtn').addEventListener('click', ()=>{ window.print(); });
+    document.getElementById('resetBtn').addEventListener('click', ()=>{
+      nameInput.value = '';
+      hint.textContent = '';
+      statusText.textContent = 'Terkunci';
+      toName.textContent = 'Pacar Tersayang';
+      msg.textContent = 'Tekan Reveal untuk melihat pesan manisnya.';
+      hex.textContent = '0000';
+      heartsWrap.innerHTML = '';
+    });
+
+    document.getElementById('demoBtn').addEventListener('click', ()=>{ nameInput.value = 'Sayang'; revealBtn.click(); });
+  </script>
+</body>
+</html>
